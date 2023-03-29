@@ -38,7 +38,7 @@
 		$.each(data, function (index, obj) {
 			listHtml += "<tr>";
 			listHtml += "<td>"+obj.idx+"</td>";
-			listHtml += "<td><a href='javascript:goContent("+obj.idx+")'>"+obj.title+"</a></td>";
+			listHtml += "<td id='t"+obj.idx+"'><a href='javascript:goContent("+obj.idx+")'>"+obj.title+"</a></td>";
 			listHtml += "<td>"+obj.writer+"</td>";
 			listHtml += "<td>"+obj.indate+"</td>";
 			listHtml += "<td>"+obj.count+"</td>";
@@ -47,9 +47,9 @@
 			listHtml += "<tr id='c"+obj.idx+"' style='display:none'>";
 			listHtml += "<td>내용</td>";
 			listHtml += "<td colspan='4'>";
-			listHtml += "<textarea readonly rows='7' class='form-control'>"+obj.content+"</textarea>"
+			listHtml += "<textarea id='ta"+obj.idx+"' readonly rows='7' class='form-control'>"+obj.content+"</textarea>"
 			listHtml += "<br/>";
-			listHtml += "<button class='btn btn-success btn-sm'>수정화면</button>&nbsp;";
+			listHtml += "<span id='ub"+obj.idx+"'><button class='btn btn-success btn-sm' onclick='goUpdateForm("+obj.idx+")'>수정화면</button></span>&nbsp;";
 			listHtml += "<button class='btn btn-warning btn-sm' onclick='goDelete("+obj.idx+")'>삭제</button>";
 			listHtml += "</td>";
 			listHtml += "</tr>";
@@ -105,6 +105,7 @@
   	function goContent(idx) {	// idx, 10, 9, 8...
   		if($("#c"+idx).css("display")=="none"){		// 닫혀있을경우
   			$("#c"+idx).css("display", "table-row");	// 보이게 block이 아닌 table-row로 해야 스타일이 먹힌다.
+  			$("#ta"+idx).attr("readonly", true);
   		} else {
   			$("#c"+idx).css("display", "none");	// 감추게함
   		}	
@@ -115,6 +116,31 @@
 			url: "boardDelete.do",
 			type: "get",
 			data: {"idx": idx},
+			success: loadList,
+			error: function () {
+				alert("error");
+			}
+		});
+	}
+  	
+  	function goUpdateForm(idx) {	// idx = 10, 7, ...
+		$("#ta"+idx).attr("readonly", false);		// attr = attribute readonly를 취소해라 readonly는 style이 아님
+		
+		var title = $("#t"+idx).text();		// 수정할 제목의 원래 제목을 가져옴
+		var newInput = "<input type='text' id='nt"+idx+"' class='form-control' value='"+title+"'/>";
+		$("#t"+idx).html(newInput);
+		
+		var newButton = "<button class='btn btn-info btn-sm' onclick='goUpdate("+idx+")'>수정</button>";		// 수정화면버튼을 수정버튼으로 변경
+		$("#ub"+idx).html(newButton);	
+  	}
+  	
+  	function goUpdate(idx) {
+		var title=$("#nt"+idx).val();
+		var content=$("#ta"+idx).val();
+		$.ajax({
+			url: "boardUpdate.do",
+			type: "post",
+			data: {"idx":idx, "title":title, "content":content},
 			success: loadList,
 			error: function () {
 				alert("error");
