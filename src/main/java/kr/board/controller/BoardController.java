@@ -19,35 +19,9 @@ import kr.board.mapper.BoardMapper;
 @Controller
 public class BoardController {
 
-	@Autowired
-	BoardMapper boardMapper;
-	
 	@RequestMapping("/")
 	public String main() {
 		return "main";
 	}
-	
-	// @ResponseBody -> jackson-databind(객체를 -> JSON 데이터포멧으로 변환)
-	@RequestMapping("/boardList.do")
-	public @ResponseBody List<Board> boardList() {
-		
-		List<Board> list = boardMapper.getLists();
-		
-		return list;	// JSON 데이터 형식으로 변환(API)해서 리턴(응답)하겠다.
-	}
-	
-	@RequestMapping("/boardInsert.do")
-	public @ResponseBody void boardInsert(Board vo) {
-		boardMapper.boardInsert(vo);	// 등록 성공
-	}
-	
-	@RequestMapping("/boardDelete.do")
-	public @ResponseBody void boardDelete(@RequestParam("idx") int idx) {
-		boardMapper.boardDelete(idx);
-	}
-	
-	@RequestMapping("/boardUpdate.do")
-	public @ResponseBody void boardUpdate(Board vo) {
-		boardMapper.boardUpdate(vo);
-	}
+
 }
